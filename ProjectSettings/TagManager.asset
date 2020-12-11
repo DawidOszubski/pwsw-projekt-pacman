@@ -6,8 +6,8 @@ TagManager:
   tags:
   - Pill
   - Syringe
-  - Pacman
   - Point
+  - Pacman
   layers:
   - Default
   - TransparentFX
