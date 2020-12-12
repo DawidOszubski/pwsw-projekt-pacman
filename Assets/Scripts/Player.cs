@@ -2,12 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public float speed = 4f;
     private Rigidbody2D rb;
     public Sprite pausedSprite;
+
+    SoundManager soundManager;
+
+    public AudioClip eatingVirus;
+    public AudioClip pacmanDies;
+    public AudioClip syringeUse;
 
     private void Awake()
     {
@@ -17,7 +24,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         rb.velocity = new Vector2(-1, 0) * speed;
-        
+        soundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
     }
 
     private void FixedUpdate()
@@ -60,7 +67,8 @@ public class Player : MonoBehaviour
            
         } else if (Input.GetKey("d"))
         {
-           if (localVelocity.x < -0.1) {
+           if (localVelocity.x < -0.1) 
+           {
                 moveVect = new Vector2(horzMove, 0);
                 transform.position = new Vector2((int)transform.position.x + 0.5f, (int)transform.position.y + 0.5f);
 
@@ -72,7 +80,6 @@ public class Player : MonoBehaviour
             }
             else
             {
-
 
                 moveVect = new Vector2(horzMove, 0);
 
@@ -135,8 +142,6 @@ public class Player : MonoBehaviour
             }
             else
             {
-
-
                 moveVect = new Vector2(0, vertMove);
 
                 if (canIMoveInDirection(moveVect))
@@ -152,6 +157,16 @@ public class Player : MonoBehaviour
             }
 
         }
+
+
+
+
+
+
+
+
+
+
 
         stopPacman();
 
@@ -202,6 +217,12 @@ public class Player : MonoBehaviour
             if (hitAWall)
                 rb.velocity = Vector2.zero;
         }
+
+        if(col.gameObject.tag == "Pill")
+        {
+            pickUpPill(col);
+        }
+
     }
 
     private void stopPacman()
@@ -210,9 +231,32 @@ public class Player : MonoBehaviour
         {
             GetComponent<Animator>().enabled = false;
             GetComponent<SpriteRenderer>().sprite = pausedSprite;
+
+            soundManager.pausePacman();
         } else
         {
             GetComponent<Animator>().enabled = true;
+
+            soundManager.unPausePacman();
         }
     }
+
+    public void pickUpPill(Collider2D col)
+    {
+        addPoint();
+
+        Destroy(col.gameObject);
+    }
+
+    public void addPoint()
+    {
+        Text textUIComp = GameObject.Find("Score").GetComponent<Text>();
+
+        int score = int.Parse(textUIComp.text);
+
+        score += 10;
+
+        textUIComp.text = score.ToString();
+    }
+
 }
