@@ -57,8 +57,9 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\GameScene.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
-    <Compile Include="Assets\Scripts\TurningPoint.cs" />
     <Compile Include="Assets\Scripts\SoundManager.cs" />
+    <Compile Include="Assets\Scripts\TurningPoint.cs" />
+    <Compile Include="Assets\Scripts\Virus.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

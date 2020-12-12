@@ -8,6 +8,7 @@ TagManager:
   - Syringe
   - Point
   - Pacman
+  - Virus
   layers:
   - Default
   - TransparentFX
@@ -44,6 +45,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Virus
+    uniqueID: 2787168321
     locked: 0
   - name: Pacman
     uniqueID: 2842897215

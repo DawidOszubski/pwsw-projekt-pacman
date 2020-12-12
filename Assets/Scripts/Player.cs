@@ -16,9 +16,20 @@ public class Player : MonoBehaviour
     public AudioClip pacmanDies;
     public AudioClip syringeUse;
 
+    GameScene gameScene;
+
+    Virus redVirusScript;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        gameScene = FindObjectOfType(typeof(GameScene)) as GameScene;
+
+        GameObject redVirusGO = GameObject.Find("RedVirus");
+
+        redVirusScript = (Virus)redVirusGO.GetComponent(typeof(Virus));
+
     }
 
     void Start()
@@ -39,7 +50,7 @@ public class Player : MonoBehaviour
 
         if(Input.GetKey("a"))
         {
-            if (localVelocity.x > 0)
+            if (localVelocity.x > 0 && gameScene.IsValidSPace(transform.position.x - 1, transform.position.y))
             {
                 moveVect = new Vector2(horzMove, 0);
                 transform.position = new Vector2((int)transform.position.x + 0.5f, (int)transform.position.y + 0.5f);
@@ -67,7 +78,7 @@ public class Player : MonoBehaviour
            
         } else if (Input.GetKey("d"))
         {
-           if (localVelocity.x < -0.1) 
+           if (localVelocity.x < -0.1 && gameScene.IsValidSPace(transform.position.x + 1, transform.position.y)) 
            {
                 moveVect = new Vector2(horzMove, 0);
                 transform.position = new Vector2((int)transform.position.x + 0.5f, (int)transform.position.y + 0.5f);
@@ -98,7 +109,7 @@ public class Player : MonoBehaviour
         } 
         else if (Input.GetKey("w"))
         {
-            if (localVelocity.y > 0)
+            if (localVelocity.y > 0 && gameScene.IsValidSPace(transform.position.x, transform.position.y + 1))
             {
                 moveVect = new Vector2(0, vertMove);
                 transform.position = new Vector2((int)transform.position.x + 0.5f, (int)transform.position.y + 0.5f);
@@ -129,7 +140,7 @@ public class Player : MonoBehaviour
         } 
         else if (Input.GetKey("s"))
         {
-            if (localVelocity.y < 0)
+            if (localVelocity.y < 0 && gameScene.IsValidSPace(transform.position.x, transform.position.y - 1))
             {
                 moveVect = new Vector2(0, vertMove);
                 transform.position = new Vector2((int)transform.position.x + 0.5f, (int)transform.position.y + 0.5f);
@@ -155,18 +166,7 @@ public class Player : MonoBehaviour
                     transform.localRotation = Quaternion.Euler(0, 0, 90);
                 }
             }
-
         }
-
-
-
-
-
-
-
-
-
-
 
         stopPacman();
 
@@ -176,7 +176,7 @@ public class Player : MonoBehaviour
     {
         Vector2 pos = transform.position;
 
-        Transform point = GameObject.Find("GridGB").GetComponent<GameScene>().gBPoints[(int)pos.x, (int)pos.y];
+        Transform point = GameObject.Find("GBGrid").GetComponent<GameScene>().gBPoints[(int)pos.x, (int)pos.y];
 
         if(point != null)
         {
@@ -216,11 +216,35 @@ public class Player : MonoBehaviour
 
             if (hitAWall)
                 rb.velocity = Vector2.zero;
+
+        }
+
+        Vector2 pmMoveVect = new Vector2(0, 0);
+
+        if(transform.position.x < 2 && transform.position.y == 15.5)
+        {
+            transform.position = new Vector2(24.5f, 15.5f);
+            pmMoveVect = new Vector2(-1, 0);
+            rb.velocity = pmMoveVect * speed;
+        } else if(transform.position.x > 25 && transform.position.y == 15.5)
+        {
+            transform.position = new Vector2(2f, 15.5f);
+            pmMoveVect = new Vector2(1, 0);
+            rb.velocity = pmMoveVect * speed;
         }
 
         if(col.gameObject.tag == "Pill")
         {
             pickUpPill(col);
+        }
+
+        if (col.gameObject.tag == "Syringe")
+        {
+
+            SoundManager.Instance.playOnce(SoundManager.Instance.syringeUse);
+
+            redVirusScript.turnVirusBlue();
+
         }
 
     }
