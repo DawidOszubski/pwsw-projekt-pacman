@@ -7,17 +7,19 @@ public class TurningPoint : MonoBehaviour
     public TurningPoint[] nextPoints;
     public Vector2[] vectToNextPoint;
 
-    // Use this for initialization
+    // funkcja używana do inicjalizacji
     void Start()
     {
-
+        // tablica przechowująca vektory do pobliskich TurningPoint
         vectToNextPoint = new Vector2[nextPoints.Length];
 
         for(int i = 0; i < nextPoints.Length; i++)
         {
+            // pobranie TurningPoint z tablicy
             TurningPoint nextPoint = nextPoints[i];
-            Vector2 pointVect = nextPoint.transform.localPosition - transform.localPosition;
-
+            // wyliczenie wektora z (TurningPoint) this do (TurningPoint) nextPoints[i]
+            Vector2 pointVect = nextPoint.transform.localPosition - transform.localPosition; 
+            // normalizacja i zapisanie wyliczonego wektora
             vectToNextPoint[i] = pointVect.normalized;
         }
 

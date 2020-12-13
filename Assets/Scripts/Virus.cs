@@ -5,32 +5,19 @@ using UnityEngine;
 // Used to find out if Ghost hits a wall
 using System;
 
-
-
-
-
-
-
-
-
-
-
 public class Virus : MonoBehaviour
 {
 
-	public float speed = 4f;
+	public float speed = 4f; // prędkość danego wirusa
+	private Rigidbody2D rb; // do poruszania danym wirusem
 
-	// Used to move the Ghost
-	private Rigidbody2D rb;
-
-	// Animation sprites
+	// grafiki przedstawiające wirusa patrzącego w cztery kierunki
 	public Sprite lookLeftSprite;
 	public Sprite lookRightSprite;
 	public Sprite lookUpSprite;
 	public Sprite lookDownSprite;
 
-	// An array of destinations the Ghosts will move toward
-	// while on patrol
+	// punkty do których kolejno będzie poruszał się wirus
 	Vector2[] destinations = new Vector2[]{
 		new Vector2( 1, 29 ),
 		new Vector2( 26, 29 ),
@@ -38,141 +25,87 @@ public class Virus : MonoBehaviour
 		new Vector2( 1, 1 ),
 		new Vector2( 6, 16 )
 	};
+	
+	public int destinationIndex; // indeks wskazujący do którego punktu teraz ma się poruszać wirus
+	Vector2 moveVect; // kierunek w stronę punktu do którego teraz ma się poruszać wirus
+	public SpriteRenderer sr; 
+	public bool isVirusBlue = false; // status wirusa
+	public Sprite blueVirus; // grafika niebieskiego wirusa
 
-	// The index to the first destination the Ghost aims at
-	// Each Ghost aims at a different one
-	public int destinationIndex;
+	public float startWaitTime = 0; // czas po którym wirus zacznie się poruszać na planszy
+	public float waitTimeAfterEaten = 4.0f; // czas po którym wirus pojawi się ponownie po zjedzeniu
 
-	// Direction Ghost will move when it hits a Point
-	Vector2 moveVect;
-
-	public SpriteRenderer sr;
-
-	public bool isVirusBlue = false;
-
-	public Sprite blueVirus;
-
-	public float startWaitTime = 0;
-
-	public float waitTimeAfterEaten = 4.0f;
-
-	public float cellXPos = 0;
+	// współrzędne wirusa na planszy
+	public float cellXPos = 0; 
 	public float cellYPos = 0;
 
-	// Add Rigidbody to Ghosts
 	void Awake()
 	{
-		// Get Ghost Rigidbody
-		rb = GetComponent<Rigidbody2D>();
-
+		rb = GetComponent<Rigidbody2D>(); // pobranie referencji do rigidbody wirusa
 		sr = gameObject.GetComponent<SpriteRenderer>();
 	}
 
-
 	void Start()
 	{
-		Invoke("startMoving", startWaitTime);
-
+		Invoke("startMoving", startWaitTime); // rozpoczęczie ruchu po czasie startWaitTime
 	}
 
 	void startMoving()
     {
-		transform.position = new Vector2(13.5f, 18.5f);
-
-		// X of the destination TurningPoint
+		// ustawienie wirusa na środku planszy
+		transform.position = new Vector2(13.5f, 18.5f); 
+		// pobranie współrzędnej x punktu do którego porusza się wirus
 		float xDest = destinations[destinationIndex].x;
 
-		// If Ghost x pos > destination x
-		if (transform.position.x > xDest)
-		{
-
-			// Move the Ghost left
-			rb.velocity = new Vector2(-1, 0) * speed;
-		}
-		else
-		{
-			// Move the Ghost right
-			rb.velocity = new Vector2(1, 0) * speed;
-		}
+		if (transform.position.x > xDest) // jeśli wirus ma iść w lewo
+			rb.velocity = new Vector2(-1, 0) * speed; // nadajemy wirusowi pęd w lewo
+		else // jeśli wirus ma iść w prawo
+			rb.velocity = new Vector2(1, 0) * speed; // nadajemy wirusowi pęd w prawo
 	}
 
 	void OnTriggerEnter2D(Collider2D col)
 	{
-
-		// If the Ghost hit a Point
+		// jeśli wirus napotka TurningPoint
 		if (col.gameObject.tag == "Point")
 		{
-
-			// Get the Vector my Ghost wants to move towards
+			// wyszukanie kolejnego punktu w którym ma się poruszać wirus
 			moveVect = getNewDirection(col.transform.position);
 
-			// Position the Ghost at point on screen
-			transform.position = new Vector2((int)col.transform.position.x + .5f,
+			// wyśrodkowanie wirusa do środka kratki
+			transform.position = new Vector2(
+				(int)col.transform.position.x + .5f, 
 				(int)col.transform.position.y + .5f);
 
+			// wartość 2 oznacza error, x i y wektora przyjmuje tylko wartości -1, 0 i 1
 			if (moveVect.x != 2)
 			{
+				rb.velocity = moveVect * speed; // zmiana kierunku poruszania się wirusa
 
-				if(moveVect == Vector2.right)
+                // jeśli wirus nie jest niebieski
+                if (!isVirusBlue)
                 {
-					// Changes the direction of the Ghost
-					rb.velocity = moveVect * speed;
-
-                    if (!isVirusBlue)
-                    {
-						sr.sprite = lookRightSprite;
-					}
-
-				} else if (moveVect == Vector2.left)
-                {
-					// Changes the direction of the Ghost
-					rb.velocity = moveVect * speed;
-
-					if (!isVirusBlue)
-					{
-						sr.sprite = lookLeftSprite;
-					}
-
-				} else if (moveVect == Vector2.up)
-                {
-					// Changes the direction of the Ghost
-					rb.velocity = moveVect * speed;
-
-					if (!isVirusBlue)
-					{
-						sr.sprite = lookUpSprite;
-					}
-
-				} else if (moveVect == Vector2.down)
-                {
-					// Changes the direction of the Ghost
-					rb.velocity = moveVect * speed;
-
-					if (!isVirusBlue)
-					{
-						sr.sprite = lookDownSprite;
-					}
-
+					// ustawienie kierunku patrzenia wirusa zgodnie z jego kierunkiem ruchu
+					if (moveVect == Vector2.right) sr.sprite = lookRightSprite;
+					else if (moveVect == Vector2.left) sr.sprite = lookLeftSprite;
+					else if (moveVect == Vector2.up) sr.sprite = lookUpSprite;
+					else if (moveVect == Vector2.down) sr.sprite = lookDownSprite;
 				}
-
 			}
-
 		}
 
-		Vector2 virusMoveVect = new Vector2(0, 0);
-
-		if(transform.position.x < 2 && transform.position.y == 15.5)
+		// przejście wirusa przez teleport
+		if(transform.position.x < 2 && transform.position.y == 15.5) // lewy portal
         {
-			transform.position = new Vector2(24.5f, 15.5f);
-			virusMoveVect = new Vector2(-1, 0);
-			rb.velocity = virusMoveVect * speed;
-        } else if (transform.position.x > 25 && transform.position.y == 15.5)
+			transform.position = new Vector2(24.5f, 15.5f); // zmiana jego położenia
+			Vector2 virusMoveVect = new Vector2(-1, 0); // zmiana kierunku w którym patrzy
+			rb.velocity = virusMoveVect * speed; // nadanie prędkości wirusowi
+        } 
+		else if (transform.position.x > 25 && transform.position.y == 15.5) // prawy portal
 		{
 			transform.position = new Vector2(2f, 15.5f);
-			virusMoveVect = new Vector2(1, 0);
+			Vector2 virusMoveVect = new Vector2(1, 0);
 			rb.velocity = virusMoveVect * speed;
 		}
-
 	}
 
 	GameObject pacmanGO = null;
@@ -212,454 +145,182 @@ public class Virus : MonoBehaviour
 	Vector2 getNewDirection(Vector2 pointVect)
 	{
 
-		// Ghost position minus the additional .5 for X & Y
+		// pobranie i zaokrąglenie pozycji wirusa co wartości całkowitych
 		float xPos = (float)Math.Floor(Convert.ToDouble(transform.position.x));
 		float yPos = (float)Math.Floor(Convert.ToDouble(transform.position.y));
 
-		// Pivot point position minus the additional .5 for X & Y
+		// zaokrąglenie pozycji TurningPoint na którym znajuje się wirus
 		pointVect.x = (float)Math.Floor(Convert.ToDouble(pointVect.x));
 		pointVect.y = (float)Math.Floor(Convert.ToDouble(pointVect.y));
 
-		// Get the destination
+		// gdzie ma iść wirus
 		Vector2 dest = destinations[destinationIndex];
 
-		if(pacmanGO != null)
-        {
-			dest = pacmanGO.transform.position;
-        }
-
-		// Checks to see if the Ghost hits the destination
+		// sprawdzamy czy wirus doszedł już tam gdzie chciał dojść
 		if (((pointVect.x + 1) == dest.x) && ((pointVect.y + 1) == dest.y))
-		{
-			destinationIndex = (destinationIndex == 4) ? 0 :
-				destinationIndex + 1;
+			destinationIndex = (destinationIndex == 4) ? 0 : destinationIndex + 1; // wybranie nowego celu
 
-			Debug.Log("NEW DESTINATION " + destinations[destinationIndex]);
-		}
+		dest = destinations[destinationIndex]; // pobranie celu z tablicy
 
-		dest = destinations[destinationIndex];
-
+		// jeśli wirus ma gonić gracza
 		if (pacmanGO != null)
-        {
-			dest = pacmanGO.transform.position;
-        }
+			dest = pacmanGO.transform.position; // gracz jest celem
 
-		// Will hold the new direction Ms. Pac-Man will move to
-		Vector2 newDir = new Vector2(2, 0);
+		
+		Vector2 newDir = new Vector2(2, 0); // wektor jaki zwracamy, 2 oznacza że wystąpił błąd i nie znaleśliśmy nowego wektora
+		Vector2 prevDir = rb.velocity.normalized; // zapamiętujemy poprzedni kierunek ruchu
+		Vector2 oppPrevDir = prevDir * -1; // przeciwieństwo poprzedniego kierunku
 
-		// Holds previous direction traveled
-		Vector2 prevDir = rb.velocity.normalized;
-
-		// Holds opposite of previous direction traveled
-		Vector2 oppPrevDir = prevDir * -1;
-
-		// Vector2 directions
+		// cztery kierunki, wektory te uproszczą kod
 		Vector2 goRight = new Vector2(1, 0);
 		Vector2 goLeft = new Vector2(-1, 0);
 		Vector2 goUp = new Vector2(0, 1);
 		Vector2 goDown = new Vector2(0, -1);
 
-		// Distance from destinations is used to decide if I
-		// should move based off of which X or Y is closest
+		// odległość od celu
 		float destXDist = dest.x - xPos;
 		float destYDist = dest.y - yPos;
 
-		Debug.Log("GET NEW DIRECTION");
-		Debug.Log("X POSITION " + xPos);
-		Debug.Log("Y POSITION " + yPos);
-		Debug.Log("DEST X POSITION " + dest.x);
-		Debug.Log("DEST Y POSITION " + dest.y);
-		Debug.Log("POINT X POSITION " + pointVect.x);
-		Debug.Log("POINT Y POSITION " + pointVect.y);
-
-		// Upper Left
-
-		// Keeps Ghost from going toward the portal
+		// GÓRNY LEWY
 		if (destYDist > 0 && destXDist < 0)
 		{
-
+			// ominięcie portalu
 			if (pointVect.x == 5 && pointVect.y == 15)
 			{
-
-				if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir)
-				{
-					newDir = goUp;
-				}
-
-				// Pick Up or Left depending whether I'm closest to
-				// the X or Y
+				if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir) newDir = goUp;
 			}
 			else if (destYDist > destXDist)
 			{
-
-				if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir)
-				{
-					newDir = goLeft;
-				}
-				else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir)
-				{
-					newDir = goUp;
-				}
-				else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir)
-				{
-					newDir = goRight;
-				}
-				else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir)
-				{
-					newDir = goDown;
-				}
-				else if (canIMoveInDirection(oppPrevDir, pointVect))
-				{
-					newDir = oppPrevDir;
-				}
-
-
+				if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir) newDir = goLeft;
+				else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir) newDir = goUp;
+				else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir) newDir = goRight;
+				else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir) newDir = goDown;
 			}
 			else if (destYDist < destXDist)
 			{
-
-				if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir)
-				{
-					newDir = goUp;
-				}
-				else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir)
-				{
-					newDir = goLeft;
-				}
-				else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir)
-				{
-					newDir = goRight;
-				}
-				else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir)
-				{
-					newDir = goDown;
-				}
-				else if (canIMoveInDirection(oppPrevDir, pointVect))
-				{
-					newDir = oppPrevDir;
-				}
-
+				if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir) newDir = goUp;
+				else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir) newDir = goLeft;
+				else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir) newDir = goRight;
+				else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir) newDir = goDown;
 			}
-
 		}
 
-		// Upper Right
-
+		// GÓRNY PRAWY
 		if (destYDist > 0 && destXDist > 0)
 		{
-
 			if (destYDist > destXDist)
 			{
-
-				if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir)
-				{
-					newDir = goRight;
-				}
-				else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir)
-				{
-					newDir = goUp;
-				}
-				else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir)
-				{
-					newDir = goLeft;
-				}
-				else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir)
-				{
-					newDir = goDown;
-				}
-				else if (canIMoveInDirection(oppPrevDir, pointVect))
-				{
-					newDir = oppPrevDir;
-				}
-
+				if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir) newDir = goRight;
+				else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir) newDir = goUp;
+				else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir) newDir = goLeft;
+				else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir) newDir = goDown;
 			}
 			else if (destYDist < destXDist)
 			{
-
-				if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir)
-				{
-					newDir = goUp;
-				}
-				else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir)
-				{
-					newDir = goRight;
-				}
-				else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir)
-				{
-					newDir = goLeft;
-				}
-				else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir)
-				{
-					newDir = goDown;
-				}
-				else if (canIMoveInDirection(oppPrevDir, pointVect))
-				{
-					newDir = oppPrevDir;
-				}
-
+				if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir) newDir = goUp;
+				else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir) newDir = goRight;
+				else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir) newDir = goLeft;
+				else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir) newDir = goDown;
 			}
-
 		}
 
-		// Lower Right
-
+		// DOLNY LEWY
 		if (destYDist < 0 && destXDist > 0)
 		{
-
 			if (destYDist > destXDist)
 			{
-
-				if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir)
-				{
-					newDir = goRight;
-				}
-				else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir)
-				{
-					newDir = goDown;
-				}
-				else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir)
-				{
-					newDir = goLeft;
-				}
-				else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir)
-				{
-					newDir = goUp;
-				}
-				else if (canIMoveInDirection(oppPrevDir, pointVect))
-				{
-					newDir = oppPrevDir;
-				}
-
+				if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir) newDir = goRight;
+				else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir) newDir = goDown;
+				else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir) newDir = goLeft;
+				else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir) newDir = goUp;
 			}
 			else if (destYDist < destXDist)
 			{
-
-				if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir)
-				{
-					newDir = goDown;
-				}
-				else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir)
-				{
-					newDir = goRight;
-				}
-				else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir)
-				{
-					newDir = goLeft;
-				}
-				else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir)
-				{
-					newDir = goUp;
-				}
-				else if (canIMoveInDirection(oppPrevDir, pointVect))
-				{
-					newDir = oppPrevDir;
-				}
-				else if (canIMoveInDirection(oppPrevDir, pointVect))
-				{
-					newDir = oppPrevDir;
-				}
-
+				if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir) newDir = goDown;
+				else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir) newDir = goRight;
+				else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir) newDir = goLeft;
+				else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir) newDir = goUp;
 			}
-
 		}
 
-		// Lower Left
-
+		// DOLNY PRAWY
 		if (destYDist < 0 && destXDist < 0)
 		{
-
 			if (destYDist > destXDist)
 			{
-
-				if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir)
-				{
-					newDir = goLeft;
-				}
-				else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir)
-				{
-					newDir = goDown;
-				}
-				else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir)
-				{
-					newDir = goRight;
-				}
-				else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir)
-				{
-					newDir = goUp;
-				}
-				else if (canIMoveInDirection(oppPrevDir, pointVect))
-				{
-					newDir = oppPrevDir;
-				}
-
+				if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir) newDir = goLeft;
+				else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir) newDir = goDown;
+				else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir) newDir = goRight;
+				else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir) newDir = goUp;
 			}
 			else if (destYDist < destXDist)
 			{
-
-				if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir)
-				{
-					newDir = goDown;
-				}
-				else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir)
-				{
-					newDir = goLeft;
-				}
-				else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir)
-				{
-					newDir = goRight;
-				}
-				else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir)
-				{
-					newDir = goUp;
-				}
-				else if (canIMoveInDirection(oppPrevDir, pointVect))
-				{
-					newDir = oppPrevDir;
-				}
-
+				if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir) newDir = goDown;
+				else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir) newDir = goLeft;
+				else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir) newDir = goRight;
+				else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir) newDir = goUp;
 			}
-
 		}
 
-		// Ys Equal and Want to go Right
-		// Done because the above don't test for if Xs & Ys are equal
-
-		if ((int)(dest.y) == (int)(yPos)
-			&& destXDist > 0)
+		// współżędne y wirusa i celu są takie same i wirus chce iść w prawo
+		if ((int)(dest.y) == (int)(yPos) && destXDist > 0)
 		{
-
-			if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir)
-			{
-				newDir = goRight;
-			}
-			else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir)
-			{
-				newDir = goUp;
-			}
-			else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir)
-			{
-				newDir = goDown;
-			}
-			else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir)
-			{
-				newDir = goLeft;
-			}
-
+			if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir) newDir = goRight;
+			else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir) newDir = goUp;
+			else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir) newDir = goDown;
+			else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir) newDir = goLeft;
 		}
 
-		// Ys Equal and Want to go Left
-
-		if ((int)(dest.y) == (int)(yPos)
-			&& destXDist < 0)
+		// współżędne y wirusa i celu są takie same i wirus chce iść w lewo
+		if ((int)(dest.y) == (int)(yPos) && destXDist < 0)
 		{
-
-			if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir)
-			{
-				newDir = goLeft;
-			}
-			else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir)
-			{
-				newDir = goUp;
-			}
-			else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir)
-			{
-				newDir = goDown;
-			}
-			else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir)
-			{
-				newDir = goRight;
-			}
-
+			if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir) newDir = goLeft;
+			else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir) newDir = goUp;
+			else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir) newDir = goDown;
+			else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir) newDir = goRight;
 		}
 
-		// Xs Equal and Want to go Up
-
-		if ((int)(dest.x) == (int)(xPos)
-			&& destYDist > 0)
+		// współżędne x wirusa i celus są takie same i wirus chce iść do góry
+		if ((int)(dest.x) == (int)(xPos) && destYDist > 0)
 		{
-
-			if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir)
-			{
-				newDir = goUp;
-			}
-			else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir)
-			{
-				newDir = goRight;
-			}
-			else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir)
-			{
-				newDir = goLeft;
-			}
-			else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir)
-			{
-				newDir = goDown;
-			}
+			if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir) newDir = goUp;
+			else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir) newDir = goRight;
+			else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir) newDir = goLeft;
+			else if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir) newDir = goDown;
 		}
 
-
-		// Xs Equal and Want to go Down
-
-		if ((int)(dest.x) == (int)(xPos)
-			&& destYDist < 0)
+		// współżądne x wirusa i celu są takie same i wirus chce iść w dół
+		if ((int)(dest.x) == (int)(xPos) && destYDist < 0)
 		{
-
-			if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir)
-			{
-				newDir = goDown;
-			}
-			else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir)
-			{
-				newDir = goRight;
-			}
-			else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir)
-			{
-				newDir = goLeft;
-			}
-			else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir)
-			{
-				newDir = goUp;
-			}
-
+			if (canIMoveInDirection(goDown, pointVect) && goDown != oppPrevDir) newDir = goDown;
+			else if (canIMoveInDirection(goRight, pointVect) && goRight != oppPrevDir) newDir = goRight;
+			else if (canIMoveInDirection(goLeft, pointVect) && goLeft != oppPrevDir) newDir = goLeft;
+			else if (canIMoveInDirection(goUp, pointVect) && goUp != oppPrevDir) newDir = goUp;
 		}
-		return newDir;
+
+		return newDir; // zwracamy obrany kierunek
 	}
 
 	// Gets a chosen direction and searches for it in the array
 	// that holds references to all the pivot points
 	bool canIMoveInDirection(Vector2 dir, Vector2 pointVect)
 	{
-
-		// Ghost position
-		Vector2 pos = transform.position;
-
-		// Used to find if there a Point in the array or null
+		// pobranie współrzędnych Obiektu TurningPoint o takich samych współrzędnych co wirus
 		Transform point = GameObject.Find("GBGrid").GetComponent<GameScene>().gBPoints[(int)pointVect.x, (int)pointVect.y];
 
-		// Did I find a Point here?
+		// jeśli pobrano współrzędne
 		if (point != null)
 		{
-
-			// Get Points associated GameObject
+			// pobranie Obiektu TurningPoint
 			GameObject pointGO = point.gameObject;
-
-			// Get vectToNextPoint array attached to the Point
+			// pobranie pobliskich obiektów TurningPoint
 			Vector2[] vectToNextPoint = pointGO.GetComponent<TurningPoint>().vectToNextPoint;
 
-			Debug.Log("Checking Vects " + dir);
-
-			// Cycle through the attached vectToNextPoint array
-			foreach (Vector2 vect in vectToNextPoint)
-			{
-
-				Debug.Log("Check " + vect);
-
-				if (vect == dir)
-				{
-					return true;
-				}
-			}
+			// sprawdzamy, czy możemy poruszyć się w żądanym kierunku
+			foreach (Vector2 vect in vectToNextPoint) if (vect == dir) return true;
 		}
-		return false;
+
+		return false; // jeśli nie mżemy poruszyć się w żądanym kierunku
 	}
 
 	public void turnVirusBlue()

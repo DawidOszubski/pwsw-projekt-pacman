@@ -5,21 +5,21 @@ using System;
 
 public class GameScene : MonoBehaviour
 {
+	// tablica przechowująca wszystkie miejsca w których można zmieniać kierunki (TurningPoints)
     public Transform[,] gBPoints = new Transform[27, 30];
-
     public bool[,] validBlock = new bool[28, 31];
 
-    private GameObject turningPoints;
-
-    // Use this for initializatino
+    // funkcja używana do inicjalizacji
     void Start()
     {
-        turningPoints = GameObject.Find("TurningPoints");
+		// zapisanie referencji do obiektu zawierającego wszystkie obiekty TurningPoint
+        GameObject turningPoints = GameObject.Find("TurningPoints");
 
+		// pętla przetważające wszystkie obiekty TurningPoint znajdujące się w obiekci TurningPoints
         foreach(Transform point in turningPoints.transform)
         {
-            Vector2 pos = point.position;
-            gBPoints[(int)pos.x, (int)pos.y] = point;
+            Vector2 pos = point.position; // pbranie pozycji obiektu TurningPoint
+            gBPoints[(int)pos.x, (int)pos.y] = point; // zapisanie pozycji w tablicy
         }
 
 		AddYRowXRange(1, 1, 26);
