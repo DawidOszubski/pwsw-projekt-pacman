@@ -19,6 +19,9 @@ public class Player : MonoBehaviour
     GameScene gameScene;
 
     Virus redVirusScript;
+    Virus pinkVirusScript;
+    Virus blueVirusScript;
+    Virus orangeVirusScript;
 
     private void Awake()
     {
@@ -27,8 +30,14 @@ public class Player : MonoBehaviour
         gameScene = FindObjectOfType(typeof(GameScene)) as GameScene;
 
         GameObject redVirusGO = GameObject.Find("RedVirus");
+        GameObject pinkVirusGO = GameObject.Find("PinkVirus");
+        GameObject blueVirusGO = GameObject.Find("BlueVirus");
+        GameObject orangeVirusGO = GameObject.Find("OrangeVirus");
 
         redVirusScript = (Virus)redVirusGO.GetComponent(typeof(Virus));
+        pinkVirusScript = (Virus)pinkVirusGO.GetComponent(typeof(Virus));
+        blueVirusScript = (Virus)blueVirusGO.GetComponent(typeof(Virus));
+        orangeVirusScript = (Virus)orangeVirusGO.GetComponent(typeof(Virus));
 
     }
 
@@ -200,14 +209,15 @@ public class Player : MonoBehaviour
     {
         bool hitAWall = false;
 
-        if(col.gameObject.tag == "Point")
+        if (col.gameObject.tag == "Point")
         {
             Vector2[] vectToNextPoint = col.GetComponent<TurningPoint>().vectToNextPoint;
 
-            if(Array.Exists(vectToNextPoint, element => element == rb.velocity.normalized))
+            if (Array.Exists(vectToNextPoint, element => element == rb.velocity.normalized))
             {
                 hitAWall = false;
-            } else
+            }
+            else
             {
                 hitAWall = true;
             }
@@ -221,19 +231,20 @@ public class Player : MonoBehaviour
 
         Vector2 pmMoveVect = new Vector2(0, 0);
 
-        if(transform.position.x < 2 && transform.position.y == 15.5)
+        if (transform.position.x < 2 && transform.position.y == 15.5)
         {
             transform.position = new Vector2(24.5f, 15.5f);
             pmMoveVect = new Vector2(-1, 0);
             rb.velocity = pmMoveVect * speed;
-        } else if(transform.position.x > 25 && transform.position.y == 15.5)
+        }
+        else if (transform.position.x > 25 && transform.position.y == 15.5)
         {
             transform.position = new Vector2(2f, 15.5f);
             pmMoveVect = new Vector2(1, 0);
             rb.velocity = pmMoveVect * speed;
         }
 
-        if(col.gameObject.tag == "Pill")
+        if (col.gameObject.tag == "Pill")
         {
             pickUpPill(col);
         }
@@ -244,6 +255,86 @@ public class Player : MonoBehaviour
             SoundManager.Instance.playOnce(SoundManager.Instance.syringeUse);
 
             redVirusScript.turnVirusBlue();
+            pinkVirusScript.turnVirusBlue();
+            blueVirusScript.turnVirusBlue();
+            orangeVirusScript.turnVirusBlue();
+
+            addPoint(50);
+
+            Destroy(col.gameObject);
+
+        }
+
+        if (col.gameObject.tag == "Virus")
+        {
+            String virusName = col.GetComponent<Collider2D>().gameObject.name;
+
+            AudioSource audioSource = soundManager.GetComponent<AudioSource>();
+
+            if (virusName == "RedVirus")
+            {
+                if (redVirusScript.isVirusBlue)
+                {
+                    redVirusScript.ResetVirusAfterEaten(gameObject);
+                    SoundManager.Instance.playOnce(SoundManager.Instance.eatingVirus);
+                    addPoint(400);
+                } else
+                {
+                    SoundManager.Instance.playOnce(SoundManager.Instance.pacmanDies);
+
+                    audioSource.Stop();
+
+                    Destroy(gameObject);
+                }
+            } else if (virusName == "PinkVirus")
+            {
+                if (pinkVirusScript.isVirusBlue)
+                {
+                    pinkVirusScript.ResetVirusAfterEaten(gameObject);
+                    SoundManager.Instance.playOnce(SoundManager.Instance.eatingVirus);
+                    addPoint(400);
+                }
+                else
+                {
+                    SoundManager.Instance.playOnce(SoundManager.Instance.pacmanDies);
+
+                    audioSource.Stop();
+
+                    Destroy(gameObject);
+                }
+            } else if (virusName == "BlueVirus")
+            {
+                if (blueVirusScript.isVirusBlue)
+                {
+                    blueVirusScript.ResetVirusAfterEaten(gameObject);
+                    SoundManager.Instance.playOnce(SoundManager.Instance.eatingVirus);
+                    addPoint(400);
+                }
+                else
+                {
+                    SoundManager.Instance.playOnce(SoundManager.Instance.pacmanDies);
+
+                    audioSource.Stop();
+
+                    Destroy(gameObject);
+                }
+            } else if (virusName == "OrangeVirus")
+            {
+                if (orangeVirusScript.isVirusBlue)
+                {
+                    orangeVirusScript.ResetVirusAfterEaten(gameObject);
+                    SoundManager.Instance.playOnce(SoundManager.Instance.eatingVirus);
+                    addPoint(400);
+                }
+                else
+                {
+                    SoundManager.Instance.playOnce(SoundManager.Instance.pacmanDies);
+
+                    audioSource.Stop();
+
+                    Destroy(gameObject);
+                }
+            }
 
         }
 
@@ -267,18 +358,18 @@ public class Player : MonoBehaviour
 
     public void pickUpPill(Collider2D col)
     {
-        addPoint();
+        addPoint(10);
 
         Destroy(col.gameObject);
     }
 
-    public void addPoint()
+    public void addPoint(int points)
     {
         Text textUIComp = GameObject.Find("Score").GetComponent<Text>();
 
         int score = int.Parse(textUIComp.text);
 
-        score += 10;
+        score += points;
 
         textUIComp.text = score.ToString();
     }

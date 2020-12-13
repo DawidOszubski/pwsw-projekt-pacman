@@ -48,9 +48,16 @@ public class Virus : MonoBehaviour
 
 	public SpriteRenderer sr;
 
-	bool isVirusBlue = false;
+	public bool isVirusBlue = false;
 
 	public Sprite blueVirus;
+
+	public float startWaitTime = 0;
+
+	public float waitTimeAfterEaten = 4.0f;
+
+	public float cellXPos = 0;
+	public float cellYPos = 0;
 
 	// Add Rigidbody to Ghosts
 	void Awake()
@@ -64,6 +71,14 @@ public class Virus : MonoBehaviour
 
 	void Start()
 	{
+		Invoke("startMoving", startWaitTime);
+
+	}
+
+	void startMoving()
+    {
+		transform.position = new Vector2(13.5f, 18.5f);
+
 		// X of the destination TurningPoint
 		float xDest = destinations[destinationIndex].x;
 
@@ -79,7 +94,6 @@ public class Virus : MonoBehaviour
 			// Move the Ghost right
 			rb.velocity = new Vector2(1, 0) * speed;
 		}
-
 	}
 
 	void OnTriggerEnter2D(Collider2D col)
@@ -161,6 +175,40 @@ public class Virus : MonoBehaviour
 
 	}
 
+	GameObject pacmanGO = null;
+
+	public void ResetVirusAfterEaten(GameObject pacman)
+    {
+		transform.position = new Vector2(cellXPos, cellYPos);
+
+		rb.velocity = Vector2.zero;
+
+		pacmanGO = pacman;
+
+		Invoke("startMovingAfterEating", waitTimeAfterEaten);
+    }
+
+	void startMovingAfterEating()
+    {
+		transform.position = new Vector2(13.5f, 18.5f);
+
+		// X of the destination TurningPoint
+		float xDest = destinations[destinationIndex].x;
+
+		// If Ghost x pos > destination x
+		if (transform.position.x > xDest)
+		{
+
+			// Move the Ghost left
+			rb.velocity = new Vector2(-1, 0) * speed;
+		}
+		else
+		{
+			// Move the Ghost right
+			rb.velocity = new Vector2(1, 0) * speed;
+		}
+	}
+
 	Vector2 getNewDirection(Vector2 pointVect)
 	{
 
@@ -175,6 +223,11 @@ public class Virus : MonoBehaviour
 		// Get the destination
 		Vector2 dest = destinations[destinationIndex];
 
+		if(pacmanGO != null)
+        {
+			dest = pacmanGO.transform.position;
+        }
+
 		// Checks to see if the Ghost hits the destination
 		if (((pointVect.x + 1) == dest.x) && ((pointVect.y + 1) == dest.y))
 		{
@@ -185,6 +238,11 @@ public class Virus : MonoBehaviour
 		}
 
 		dest = destinations[destinationIndex];
+
+		if (pacmanGO != null)
+        {
+			dest = pacmanGO.transform.position;
+        }
 
 		// Will hold the new direction Ms. Pac-Man will move to
 		Vector2 newDir = new Vector2(2, 0);
