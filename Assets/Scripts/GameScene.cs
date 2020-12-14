@@ -7,6 +7,7 @@ public class GameScene : MonoBehaviour
 {
 	// tablica przechowująca wszystkie miejsca w których można zmieniać kierunki (TurningPoints)
     public Transform[,] gBPoints = new Transform[27, 30];
+	// tablica przechowująca punkty po których Pacman może się poruszać
     public bool[,] validBlock = new bool[28, 31];
 
     // funkcja używana do inicjalizacji
@@ -22,6 +23,7 @@ public class GameScene : MonoBehaviour
             gBPoints[(int)pos.x, (int)pos.y] = point; // zapisanie pozycji w tablicy
         }
 
+		// ręczne dodanie wszystkich punktów po których Pacman może się poruszać do tablicy validBlock
 		AddYRowXRange(1, 1, 26);
 		AddXColYRange(1, 1, 4);
 		AddXColYRange(12, 1, 4);
@@ -80,6 +82,7 @@ public class GameScene : MonoBehaviour
 		AddYRowXRange(29, 15, 26);
 	}
 
+	// metoda dodająca rząd współrzędnych po których może się poruszać Pacman
     void AddYRowXRange(int yRow, int xStart, int xEnd)
     {
         for(int i = xStart; i <= xEnd; i++)
@@ -88,6 +91,7 @@ public class GameScene : MonoBehaviour
         }
     }
 
+	// metoda dodająca kolumne współrzędnych po których może się poruszać Pacman
     void AddXColYRange(int xCol, int yStart, int yEnd)
     {
         for (int i = yStart; i <= yEnd; i++)
@@ -96,6 +100,7 @@ public class GameScene : MonoBehaviour
         }
     }
 
+	// publiczna metoda sprawdzająca czy Pacman może stanąć na dane pole
     public bool IsValidSPace(float x, float y)
     {
         x = (float)Math.Floor(Convert.ToDouble(x));

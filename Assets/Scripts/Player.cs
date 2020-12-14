@@ -183,44 +183,55 @@ public class Player : MonoBehaviour
             pickUpPill(col);
         }
 
+        // jeśli Pacman spotka strzykawkę
         if (col.gameObject.tag == "Syringe")
         {
-
+            // dźwięk użycia strzykawki
             SoundManager.Instance.playOnce(SoundManager.Instance.syringeUse);
 
+            // zamiana wszystkich wirusów w niebieskie uciekające wirusy
             redVirusScript.turnVirusBlue();
             pinkVirusScript.turnVirusBlue();
             blueVirusScript.turnVirusBlue();
             orangeVirusScript.turnVirusBlue();
 
+            // dodanie 50 punktów graczowi
             addPoint(50);
 
+            // usunięcie pigułki z planszy
             Destroy(col.gameObject);
-
         }
 
         if (col.gameObject.tag == "Virus")
         {
+            // pobranie nazwy wirusa (RedVirus, PinkVirus, BlueVirus, OrangeVirus)
             String virusName = col.GetComponent<Collider2D>().gameObject.name;
 
+            // referencja do menadrzera dźwięków
             AudioSource audioSource = soundManager.GetComponent<AudioSource>();
 
+            // jeśli wirus jest czerwony
             if (virusName == "RedVirus")
             {
+                // jeśli wirus ucieka
                 if (redVirusScript.isVirusBlue)
                 {
-                    redVirusScript.ResetVirusAfterEaten(gameObject);
-                    SoundManager.Instance.playOnce(SoundManager.Instance.eatingVirus);
-                    addPoint(400);
-                } else
+                    redVirusScript.ResetVirusAfterEaten(gameObject); // zmaknij wirusa w klatce
+                    SoundManager.Instance.playOnce(SoundManager.Instance.eatingVirus); // dźwięk jedzenia wirusa
+                    addPoint(400); // dodanie 400 punktów
+                } 
+                
+                // jeśli wirus nie ucieka
+                else
                 {
-                    SoundManager.Instance.playOnce(SoundManager.Instance.pacmanDies);
-
-                    audioSource.Stop();
-
-                    Destroy(gameObject);
+                    SoundManager.Instance.playOnce(SoundManager.Instance.pacmanDies); // dźwięk umierania Pacmana
+                    audioSource.Stop(); // zatrzymanie wszystkich dźwięków
+                    Destroy(gameObject); // usunięcie Pacmana z planszy
                 }
-            } else if (virusName == "PinkVirus")
+            } 
+
+            // jeśli wirus jest różowy
+            else if (virusName == "PinkVirus")
             {
                 if (pinkVirusScript.isVirusBlue)
                 {
@@ -231,12 +242,13 @@ public class Player : MonoBehaviour
                 else
                 {
                     SoundManager.Instance.playOnce(SoundManager.Instance.pacmanDies);
-
                     audioSource.Stop();
-
                     Destroy(gameObject);
                 }
-            } else if (virusName == "BlueVirus")
+            } 
+            
+            // jeśli wirus jest niebieski
+            else if (virusName == "BlueVirus")
             {
                 if (blueVirusScript.isVirusBlue)
                 {
@@ -247,12 +259,13 @@ public class Player : MonoBehaviour
                 else
                 {
                     SoundManager.Instance.playOnce(SoundManager.Instance.pacmanDies);
-
                     audioSource.Stop();
-
                     Destroy(gameObject);
                 }
-            } else if (virusName == "OrangeVirus")
+            } 
+            
+            // jeśli wirus jest pomarańczowy
+            else if (virusName == "OrangeVirus")
             {
                 if (orangeVirusScript.isVirusBlue)
                 {
@@ -263,15 +276,11 @@ public class Player : MonoBehaviour
                 else
                 {
                     SoundManager.Instance.playOnce(SoundManager.Instance.pacmanDies);
-
                     audioSource.Stop();
-
                     Destroy(gameObject);
                 }
             }
-
         }
-
     }
 
     private void stopPacman()

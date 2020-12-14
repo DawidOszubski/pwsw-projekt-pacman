@@ -42,7 +42,7 @@ public class Virus : MonoBehaviour
 	void Awake()
 	{
 		rb = GetComponent<Rigidbody2D>(); // pobranie referencji do rigidbody wirusa
-		sr = gameObject.GetComponent<SpriteRenderer>();
+		sr = gameObject.GetComponent<SpriteRenderer>(); // pobranie komponentu SpriteRenderer z obiektu
 	}
 
 	void Start()
@@ -112,39 +112,14 @@ public class Virus : MonoBehaviour
 
 	public void ResetVirusAfterEaten(GameObject pacman)
     {
-		transform.position = new Vector2(cellXPos, cellYPos);
-
-		rb.velocity = Vector2.zero;
-
-		pacmanGO = pacman;
-
-		Invoke("startMovingAfterEating", waitTimeAfterEaten);
-    }
-
-	void startMovingAfterEating()
-    {
-		transform.position = new Vector2(13.5f, 18.5f);
-
-		// X of the destination TurningPoint
-		float xDest = destinations[destinationIndex].x;
-
-		// If Ghost x pos > destination x
-		if (transform.position.x > xDest)
-		{
-
-			// Move the Ghost left
-			rb.velocity = new Vector2(-1, 0) * speed;
-		}
-		else
-		{
-			// Move the Ghost right
-			rb.velocity = new Vector2(1, 0) * speed;
-		}
+		transform.position = new Vector2(cellXPos, cellYPos); // przesunięcie wirusa do klatki												 
+		rb.velocity = Vector2.zero; // zatrzymanie wirusa					  
+		pacmanGO = pacman; // od teraz wirus chce złąpać Pacmana
+		Invoke("startMoving", waitTimeAfterEaten); // wypuść wirusa po waitTImeAfterEaten
 	}
 
 	Vector2 getNewDirection(Vector2 pointVect)
 	{
-
 		// pobranie i zaokrąglenie pozycji wirusa co wartości całkowitych
 		float xPos = (float)Math.Floor(Convert.ToDouble(transform.position.x));
 		float yPos = (float)Math.Floor(Convert.ToDouble(transform.position.y));
@@ -165,7 +140,6 @@ public class Virus : MonoBehaviour
 		// jeśli wirus ma gonić gracza
 		if (pacmanGO != null)
 			dest = pacmanGO.transform.position; // gracz jest celem
-
 		
 		Vector2 newDir = new Vector2(2, 0); // wektor jaki zwracamy, 2 oznacza że wystąpił błąd i nie znaleśliśmy nowego wektora
 		Vector2 prevDir = rb.velocity.normalized; // zapamiętujemy poprzedni kierunek ruchu
@@ -323,6 +297,7 @@ public class Virus : MonoBehaviour
 		return false; // jeśli nie mżemy poruszyć się w żądanym kierunku
 	}
 
+	// publiczna metoda do zmieniania wirusa w niebieskiego wirusa
 	public void turnVirusBlue()
     {
 		StartCoroutine(TurnVirusBlueAndBack());
@@ -330,9 +305,9 @@ public class Virus : MonoBehaviour
 
 	IEnumerator TurnVirusBlueAndBack()
     {
-		isVirusBlue = true;
-		sr.sprite = blueVirus;
-		yield return new WaitForSeconds(6.0f);
-		isVirusBlue = false;
+		isVirusBlue = true; // wirus nie jest animowany gdy staje się niebieski
+		sr.sprite = blueVirus; // zmiana grafiki wirusa na niebieską
+		yield return new WaitForSeconds(6.0f); // czekamy 6 sek i przywracamy pierwotny stan wirusa
+		isVirusBlue = false; // wirus może już być animwany
     }
 }
