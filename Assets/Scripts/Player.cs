@@ -67,7 +67,7 @@ public class Player : MonoBehaviour
         {
             transform.position = new Vector2((int)transform.position.x + 0.5f, (int)transform.position.y + 0.5f); // wyśrodkowanie pozycji do centrum kratki
             rb.velocity = moveVect * speed; // nadanie pędu Pacmanowi w lewo
-            transform.localScale = new Vector2(1, 1); // odwrócenie Pacmana w lewo
+            transform.localScale = new Vector2(0.13f, 0.13f); // odwrócenie Pacmana w lewo
             transform.localRotation = Quaternion.Euler(0, 0, 0); // ustawienie orientacji
         }
     }
@@ -84,7 +84,7 @@ public class Player : MonoBehaviour
         {
             transform.position = new Vector2((int)transform.position.x + 0.5f, (int)transform.position.y + 0.5f); // wyśrodkowanie pozycji do centrum kratki
             rb.velocity = moveVect * speed; // nadanie pędu Pacmanowi w prawo
-            transform.localScale = new Vector2(-1, 1); // odwrócenie Pacmana w lewo
+            transform.localScale = new Vector2(-0.13f, 0.13f); // odwrócenie Pacmana w lewo
             transform.localRotation = Quaternion.Euler(0, 0, 0); // ustawienie orientacji
         }
     }
@@ -101,7 +101,7 @@ public class Player : MonoBehaviour
         {
             transform.position = new Vector2((int)transform.position.x + 0.5f, (int)transform.position.y + 0.5f); // wyśrodkowanie pozycji do centrum kratki
             rb.velocity = moveVect * speed; // nadanie pędu Pacmanowi w górę
-            transform.localScale = new Vector2(1, 1); // zwracamy Pacmana w lewo
+            transform.localScale = new Vector2(0.13f, 0.13f); // zwracamy Pacmana w lewo
             transform.localRotation = Quaternion.Euler(0, 0, 270); // obracamy go, aby patrzył w górę
         }
     }
@@ -118,7 +118,7 @@ public class Player : MonoBehaviour
         {
             transform.position = new Vector2((int)transform.position.x + 0.5f, (int)transform.position.y + 0.5f); // wyśrodkowanie pozycji do centrum kratki
             rb.velocity = moveVect * speed; // nadanie pędu Pacmanowi w dół
-            transform.localScale = new Vector2(1, 1); // zwracamy Pacmana w lewo
+            transform.localScale = new Vector2(0.13f, 0.13f); // zwracamy Pacmana w lewo
             transform.localRotation = Quaternion.Euler(0, 0, 90); // obracamy go, aby patrzył w dół
         }
     }
