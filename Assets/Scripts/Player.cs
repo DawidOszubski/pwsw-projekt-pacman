@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     public float speed = 4f; // prędkość Pacmana
     private Rigidbody2D rb; // do poruszania Pacmanem
     public Sprite pausedSprite; // grafika używana gdy Pacman się zatrzyma
+    private PointsCounter pc;
 
     SoundManager soundManager; // referencja do obiektu odtwarzającego dźwięki
     GameScene gameScene; // referencja do planszy gry
@@ -22,8 +23,8 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>(); // zapisanie referencji do rigidbody pacmana
-
         gameScene = FindObjectOfType(typeof(GameScene)) as GameScene; // pobranie referencji do planszy gry
+        pc = GameObject.Find("PointsCounter").GetComponent<PointsCounter>();
 
         // wczytanie referencji do obiektów wirusów
         GameObject redVirusGO = GameObject.Find("RedVirus");
@@ -180,26 +181,13 @@ public class Player : MonoBehaviour
         // jeśli Pacman spotka pigułkę
         if (col.gameObject.tag == "Pill")
         {
-            pickUpPill(col);
+            col.GetComponent<Pill>().pickUpPill();
         }
 
         // jeśli Pacman spotka strzykawkę
         if (col.gameObject.tag == "Syringe")
         {
-            // dźwięk użycia strzykawki
-            SoundManager.Instance.playOnce(SoundManager.Instance.syringeUse);
-
-            // zamiana wszystkich wirusów w niebieskie uciekające wirusy
-            redVirusScript.turnVirusBlue();
-            pinkVirusScript.turnVirusBlue();
-            blueVirusScript.turnVirusBlue();
-            orangeVirusScript.turnVirusBlue();
-
-            // dodanie 50 punktów graczowi
-            addPoint(50);
-
-            // usunięcie pigułki z planszy
-            Destroy(col.gameObject);
+            col.GetComponent<Syringe>().pickUpSyringe();
         }
 
         if (col.gameObject.tag == "Virus")
@@ -218,7 +206,7 @@ public class Player : MonoBehaviour
                 {
                     redVirusScript.ResetVirusAfterEaten(gameObject); // zmaknij wirusa w klatce
                     SoundManager.Instance.playOnce(SoundManager.Instance.eatingVirus); // dźwięk jedzenia wirusa
-                    addPoint(400); // dodanie 400 punktów
+                    pc.addPoint(400); // dodanie 400 punktów
                 } 
                 
                 // jeśli wirus nie ucieka
@@ -237,7 +225,7 @@ public class Player : MonoBehaviour
                 {
                     pinkVirusScript.ResetVirusAfterEaten(gameObject);
                     SoundManager.Instance.playOnce(SoundManager.Instance.eatingVirus);
-                    addPoint(400);
+                    pc.addPoint(400);
                 }
                 else
                 {
@@ -254,7 +242,7 @@ public class Player : MonoBehaviour
                 {
                     blueVirusScript.ResetVirusAfterEaten(gameObject);
                     SoundManager.Instance.playOnce(SoundManager.Instance.eatingVirus);
-                    addPoint(400);
+                    pc.addPoint(400);
                 }
                 else
                 {
@@ -271,7 +259,7 @@ public class Player : MonoBehaviour
                 {
                     orangeVirusScript.ResetVirusAfterEaten(gameObject);
                     SoundManager.Instance.playOnce(SoundManager.Instance.eatingVirus);
-                    addPoint(400);
+                    pc.addPoint(400);
                 }
                 else
                 {
@@ -300,7 +288,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    // metoda uruchamiana gdy Pacman spotka pigułkę
+   /* // metoda uruchamiana gdy Pacman spotka pigułkę
     public void pickUpPill(Collider2D col)
     {
         addPoint(10); // dodanie 10. punktów
@@ -314,6 +302,6 @@ public class Player : MonoBehaviour
         int score = int.Parse(textUIComp.text); // zamiana teksu na liczbę
         score += points; // zwiększenie liczby punków
         textUIComp.text = score.ToString(); // wyświetlenie nowej liczby
-    }
+    }*/
 
 }

@@ -1282,8 +1282,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.5, y: 16}
-  m_SizeDelta: {x: 40, y: 36}
+  m_AnchoredPosition: {x: 0.47, y: 16.29}
+  m_SizeDelta: {x: 164.87857, y: 33.34233}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &123115486
 MonoBehaviour:
@@ -9261,7 +9261,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 778863972}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.08289, y: 14.338521, z: -50}
+  m_LocalPosition: {x: 9.96, y: 36.3, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -9281,7 +9281,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eatingPills: {fileID: 8300000, guid: 0da7ebeec33b16f478db272c7b2008d2, type: 3}
   eatingVirus: {fileID: 8300000, guid: dc738d7be8aab3a4299e11b88050192f, type: 3}
-  virusMove: {fileID: 8300000, guid: edc54215c706ee54cbe86965b2d7c907, type: 3}
+  virusMove: {fileID: 0}
   pacmanDies: {fileID: 8300000, guid: e1eaff11c9b4e0f4998a45b46b8a70de, type: 3}
   syringeUse: {fileID: 8300000, guid: c0bae2d2728c763459aa57a878e6a2b8, type: 3}
 --- !u!1001 &789649711
@@ -11279,7 +11279,7 @@ MonoBehaviour:
   sr: {fileID: 0}
   isVirusBlue: 0
   blueVirus: {fileID: 21300000, guid: 88e21b61769047b4caff2a6ffc6890bc, type: 3}
-  startWaitTime: 2
+  startWaitTime: 1
   waitTimeAfterEaten: 4
   cellXPos: 11.5
   cellYPos: 15.5
@@ -18740,7 +18740,7 @@ MonoBehaviour:
   sr: {fileID: 0}
   isVirusBlue: 0
   blueVirus: {fileID: 21300000, guid: 88e21b61769047b4caff2a6ffc6890bc, type: 3}
-  startWaitTime: 15
+  startWaitTime: 16
   waitTimeAfterEaten: 4
   cellXPos: 14.5
   cellYPos: 15.5
@@ -22660,7 +22660,7 @@ MonoBehaviour:
   sr: {fileID: 0}
   isVirusBlue: 0
   blueVirus: {fileID: 21300000, guid: 88e21b61769047b4caff2a6ffc6890bc, type: 3}
-  startWaitTime: 10
+  startWaitTime: 11
   waitTimeAfterEaten: 4
   cellXPos: 13.5
   cellYPos: 15.5
@@ -22902,6 +22902,49 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.25
+--- !u!1 &1745478098
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1745478100}
+  - component: {fileID: 1745478099}
+  m_Layer: 0
+  m_Name: PointsCounter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1745478099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745478098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f6e09505ecbf8d44891c859c94a918b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1745478100
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745478098}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.1, y: 36.29, z: -30.503721}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1755627154
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25630,7 +25673,7 @@ MonoBehaviour:
   sr: {fileID: 0}
   isVirusBlue: 0
   blueVirus: {fileID: 21300000, guid: 88e21b61769047b4caff2a6ffc6890bc, type: 3}
-  startWaitTime: 5
+  startWaitTime: 6
   waitTimeAfterEaten: 4
   cellXPos: 12.5
   cellYPos: 15.5

@@ -34,8 +34,9 @@ public class SoundManager : MonoBehaviour
         virusAudioSource = audioSources[1];
         oneShotAudioSource = audioSources[2];
 
-        // na starcie uruchamiamy dźwięk jedzenia pigułek
-        playInLoop(pacmanAudioSource, eatingPills);
+        // te dwa "głośniki" grają ten sam dźwięk w nieskończoność
+        pacmanAudioSource.loop = true;
+        virusAudioSource.loop = true;
     }
 
     // metoda do uruchamiania pojedyńczych dźwięków

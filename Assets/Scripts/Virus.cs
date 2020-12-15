@@ -10,6 +10,7 @@ public class Virus : MonoBehaviour
 
 	public float speed = 4f; // prędkość danego wirusa
 	private Rigidbody2D rb; // do poruszania danym wirusem
+	SoundManager soundManager; // referencja do obiektu odtwarzającego dźwięki
 
 	// grafiki przedstawiające wirusa patrzącego w cztery kierunki
 	public Sprite lookLeftSprite;
@@ -29,6 +30,7 @@ public class Virus : MonoBehaviour
 	public int destinationIndex; // indeks wskazujący do którego punktu teraz ma się poruszać wirus
 	Vector2 moveVect; // kierunek w stronę punktu do którego teraz ma się poruszać wirus
 	public SpriteRenderer sr; 
+
 	public bool isVirusBlue = false; // status wirusa
 	public Sprite blueVirus; // grafika niebieskiego wirusa
 
@@ -43,6 +45,7 @@ public class Virus : MonoBehaviour
 	{
 		rb = GetComponent<Rigidbody2D>(); // pobranie referencji do rigidbody wirusa
 		sr = gameObject.GetComponent<SpriteRenderer>(); // pobranie komponentu SpriteRenderer z obiektu
+		soundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>(); // pobranie referencji do obiektu odtwarzającego dźwięk
 	}
 
 	void Start()
@@ -52,6 +55,10 @@ public class Virus : MonoBehaviour
 
 	void startMoving()
     {
+		// włącz dźwięki wirusa na 5 sekund po jego wypuszczeniu
+		soundManager.unPauseVirus();
+		Invoke("stopSound", 3); 
+
 		// ustawienie wirusa na środku planszy
 		transform.position = new Vector2(13.5f, 18.5f); 
 		// pobranie współrzędnej x punktu do którego porusza się wirus
@@ -62,6 +69,11 @@ public class Virus : MonoBehaviour
 		else // jeśli wirus ma iść w prawo
 			rb.velocity = new Vector2(1, 0) * speed; // nadajemy wirusowi pęd w prawo
 	}
+
+	private void stopSound()
+    {
+		soundManager.pauseVirus();
+    }
 
 	void OnTriggerEnter2D(Collider2D col)
 	{
@@ -305,9 +317,12 @@ public class Virus : MonoBehaviour
 
 	IEnumerator TurnVirusBlueAndBack()
     {
-		isVirusBlue = true; // wirus nie jest animowany gdy staje się niebieski
 		sr.sprite = blueVirus; // zmiana grafiki wirusa na niebieską
-		yield return new WaitForSeconds(6.0f); // czekamy 6 sek i przywracamy pierwotny stan wirusa
-		isVirusBlue = false; // wirus może już być animwany
+		isVirusBlue = true; // od teraz wirus nie jest groźny
+
+		yield return new WaitForSeconds(6.0f); // czekamy 6 sek
+
+		sr.sprite = lookLeftSprite; // przywracamy starą grafikę wirusa
+		isVirusBlue = false; // wirus jest już groźny
     }
 }
