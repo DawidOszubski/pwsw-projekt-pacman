@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,8 +23,9 @@ public class SoundManager : MonoBehaviour
     // funkcja uzywana do inicjalizacji
     void Start()
     {
+       
         // zastosowanie wzorca projektowego Singleton
-        if(Instance == null) Instance = this;
+        if (Instance == null) Instance = this;
         else if (Instance != this)  Destroy(gameObject); 
 
         // pobranie "głośników"
@@ -48,14 +50,18 @@ public class SoundManager : MonoBehaviour
     // metoda do urchamiania dźwięku w nieskończoność, na wybranym "głośniku"
     public void playInLoop(AudioSource aS, AudioClip clip)
     {
+       
         // sprawdzamy czy mamy "głośnik" i plik dźwiękowy
-        if(aS != null && clip != null)
+        if (aS != null && clip != null)
         {
-            aS.loop = true; // tryb pętli
-            aS.volume = 0.2f; // ustawienie głośności
-            aS.clip = clip; // ustawienie pliku dźwiękowego
-            aS.Play(); // uruchmienie dźwięku
+          
+                aS.loop = true; // tryb pętli
+                aS.volume = 0.2f; // ustawienie głośności
+                aS.clip = clip; // ustawienie pliku dźwiękowego
+                aS.Play(); // uruchmienie dźwięku
+           
         }
+        
     }
 
     // metoda zatrzymująca dźwięki Pacmana
@@ -93,4 +99,8 @@ public class SoundManager : MonoBehaviour
             virusAudioSource.Play();
         }
     }
+
+   
+
 }
+

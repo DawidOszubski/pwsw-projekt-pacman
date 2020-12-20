@@ -271,6 +271,7 @@ public class Player : MonoBehaviour
         }
     }
 
+
     private void stopPacman()
     {
         // jeśli Pacman się nie porusza
